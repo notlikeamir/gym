@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Mon Programme</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --surface: #161616;
+    --card: #1e1e1e;
+    --accent: #c8f135;
+    --accent2: #f1a435;
+    --text: #f0ece4;
+    --muted: #888;
+    --border: #2a2a2a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    max-width: 480px;
+    margin: 0 auto;
+    padding-bottom: 60px;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--bg);
+    padding: 28px 20px 16px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-top {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 2px;
+    color: var(--accent);
+  }
+  .header p {
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    white-space: nowrap;
+    padding: 7px 16px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .tab.active {
+    background: var(--accent);
+    color: #0d0d0d;
+    border-color: var(--accent);
+  }
+
+  /* SECTIONS */
+  .section { padding: 20px 16px 0; }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title span {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: inline-block;
+  }
+
+  /* EXERCISE CARD */
+  .ex-card {
+    background: var(--card);
+    border-radius: 14px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    transition: border-color .2s;
+  }
+  .ex-card:active { border-color: var(--accent); }
+  .ex-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    cursor: pointer;
+  }
+  .ex-thumb {
+    width: 64px;
+    height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: var(--border);
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .ex-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .play-icon {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,.35);
+  }
+  .play-icon svg { width: 20px; height: 20px; fill: white; }
+  .ex-info { flex: 1; min-width: 0; }
+  .ex-name {
+    font-weight: 500;
+    font-size: 14px;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ex-meta {
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .ex-sets {
+    background: var(--accent);
+    color: #0d0d0d;
+    font-weight: 500;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .ex-sets.orange { background: var(--accent2); }
+
+  /* SCHEDULE */
+  .schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 20px;
+  }
+  .day-cell {
+    background: var(--card);
+    border-radius: 10px;
+    padding: 8px 4px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .day-cell .day-letter {
+    font-size: 10px;
+    color: var(--muted);
+    margin-bottom: 4px;
+    display: block;
+  }
+  .day-cell .day-icon {
+    font-size: 16px;
+  }
+  .day-cell.gym-a { border-color: var(--accent); background: rgba(200,241,53,.08); }
+  .day-cell.gym-b { border-color: var(--accent2); background: rgba(241,164,53,.08); }
+  .day-cell.basket { border-color: #5ba3f5; background: rgba(91,163,245,.08); }
+  .day-cell.swim { border-color: #5bf5d8; background: rgba(91,245,216,.08); }
+  .day-cell.rest { opacity: .4; }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .legend-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+  }
+
+  /* MOBILITY */
+  .mobility-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+  }
+  .mobility-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: rgba(200,241,53,.12);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 20px;
+  }
+  .mobility-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .mobility-meta {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* REST BANNER */
+  .rest-banner {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px 20px;
+    text-align: center;
+    margin: 20px 16px;
+  }
+  .rest-banner .big { font-size: 48px; margin-bottom: 8px; }
+  .rest-banner h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 2px;
+    color: var(--muted);
+  }
+  .rest-banner p { color: var(--muted); font-size: 13px; margin-top: 6px; }
+
+  a { text-decoration: none; color: inherit; }
+  .yt-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: rgba(255,0,0,.12);
+    border: 1px solid rgba(255,0,0,.25);
+    border-radius: 8px;
+    font-size: 12px;
+    color: #ff4444;
+    margin: 0 14px 14px;
+    font-weight: 500;
+  }
+  .yt-link svg { width: 16px; height: 16px; fill: #ff4444; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <h1>MON PROG</h1>
+    <p>196 cm · Hypertrophie</p>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="showPage('planning')">Planning</button>
+    <button class="tab" onclick="showPage('dayA')">Jour A</button>
+    <button class="tab" onclick="showPage('dayB')">Jour B</button>
+    <button class="tab" onclick="showPage('mobility')">Mobilité</button>
+  </div>
+</div>
+
+<!-- PLANNING -->
+<div class="page active" id="planning">
+  <div class="section">
+    <div class="section-title"><span></span>Semaine type</div>
+    <div class="schedule-grid">
+      <div class="day-cell gym-a">
+        <span class="day-letter">LUN</span>
+        <div class="day-icon">💪</div>
+      </div>
+      <div class="day-cell rest">
+        <span class="day-letter">MAR</span>
+        <div class="day-icon">😴</div>
+      </div>
+      <div class="day-cell basket">
+        <span class="day-letter">MER</span>
+        <div class="day-icon">🏀</div>
+      </div>
+      <div class="day-cell swim">
+        <span class="day-letter">JEU</span>
+        <div class="day-icon">🏊</div>
+      </div>
+      <div class="day-cell gym-b">
+        <span class="day-letter">VEN</span>
+        <div class="day-icon">🔥</div>
+      </div>
+      <div class="day-cell rest">
+        <span class="day-letter">SAM</span>
+        <div class="day-icon">😴</div>
+      </div>
+      <div class="day-cell rest">
+        <span class="day-letter">DIM</span>
+        <div class="day-icon">😴</div>
+      </div>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>Jour A — Pec/Dos/Biceps</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent2)"></div>Jour B — Épaules/Lats/Triceps</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#5ba3f5"></div>Basketball</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#5bf5d8"></div>Natation (récup)</div>
+    </div>
+  </div>
+
+  <div class="rest-banner">
+    <div class="big">😴</div>
+    <h2>Repos total</h2>
+    <p>Mar · Sam · Dim — zéro obligation.</p>
+  </div>
+</div>
+
+<!-- JOUR A -->
+<div class="page" id="dayA">
+  <div class="section">
+    <div class="section-title"><span></span>Base athlétique</div>
+
+    <a class="ex-card" href="https://www.youtube.com/results?search_query=trap+bar+deadlift+high+handles" target="_blank">
+      <div class="ex-header">
+        <div class="ex-thumb">
+          <img src="https://i.ytimg.com/vi/9efgcAjQe7E/mqdefault.jpg" alt="" onerror="this.style.display='none'">
+          <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Trap Bar Deadlift (High Handles)</div>
+          <div class="ex-meta">Jambes · Force</div>
+        </div>
+        <div class="ex-sets">3×5-7</div>
+      </div>
+    </a>
+
+    <a class="ex-card" href="https://www.youtube.com/results?search_query=half+kneeling+pallof+press" target="_blank">
+      <div class="ex-header">
+        <div class="ex-thumb">
+          <img src="https://i.ytimg.com/vi/AH_QZLm_0-s/mqdefault.jpg" alt="" onerror="this.style.display='none'">
+          <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Half-Kneeling Pallof Press</div>
+          <div class="ex-meta">Core · Anti-rotation</div>
+        </div>
+        <div class="ex-sets">3×10/côté</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span></span>Pec &amp; Dos esthétique</div>
+
+    <a class="ex-card" href="https://www.youtube.com/results?search_query=dumbbell+incline+bench+press+hypertrophy" target="_blank">
+      <div class="ex-header">
+        <div class="ex-thumb">
+          <img src="https://i.ytimg.com/vi/8iPEnn-ltC8/mqdefault.jpg" alt="" onerror="this.style.display='none'">
+          <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Incline DB Bench Press</div>
+          <div class="ex-meta">Pec haut · Volume</div>
+        </div>
+        <div class="ex-sets">3×8-10</div>
+      </div>
+    </a>
+
+    <a class="ex-card" href="https://www.youtube.com/results?search_query=chest+supported+dumbbell+row" target="_blank">
+      <div class="ex-header">
+        <div class="ex-thumb">
+          <img src="https://i.ytimg.com/vi/d4_-E2wEGRM/mqdefault.jpg" alt="" onerror="this.style.display='none'">
+          <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Chest-Supported DB Row</div>
+          <div class="ex-meta">Dos haut · Épaisseur</div>
+        </div>
+        <div class="ex-sets">3×10-12</div>
+      </div>
+    </a>
+
+    <a class="ex-card" href="https://www.youtube.com/results?search_query=cable+crossover+chest+fly" target="_blank">
+      <div class="ex-header">
+        <div class="ex-thumb">
+          <img src="https://i.ytimg.com/vi/taI4XduLpTk/mqdefault.jpg" alt="" onerror="this.style.display='none'">
+          <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Cable Crossovers / Pec Deck</div>
+          <div class="ex-meta">Pec · Isolation</div>
+        </div>
+        <div class="ex-sets">3×12-15</div>
+      </div>
+    </a>
+
+    <a class="ex-card" href="https://www.youtube.com/results?search_query=lat+pulldown+neutral+grip" target="_blank">
+      <div class="ex-header">
+        <div class="ex-thumb">
+          <img src="https://i.ytimg.com/vi/CAwf7n6Luuc/mqdefault.jpg" alt="" onerror="this.style.display='none'">
+          <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Lat Pulldown Neutral Grip</div>
+          <div class="ex-meta">Lats bas · V-shape</div>
+        </div>
+        <div class="ex-sets">3×10-12</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span></span>Pump bras</div>
+
+    <a class="ex-card" href="https://www.youtube.com/results?search_query=ez+bar+bicep+curl" target="_blank">
+      <div class="ex-header">
+        <div class="ex-thumb">
+          <img src="https://i.ytimg.com/vi/kwG2ipFRgfo/mqdefault.jpg" alt="" onerror="this.style.display='none'">
+          <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">EZ Bar Bicep Curls</div>
+          <div class="ex-meta">Biceps · Peak</div>
+        </div>
+        <div class="ex-sets orange">4×10-12</div>
+      </div>
+    </a>
+
+    <a class="ex-card" href="https://www.youtube.com/results?search_query=tricep+rope+pushdown" target="_blank">
+      <div class="ex-header">
+        <div class="ex-thumb">
+          <img src="https://i.ytimg.com/vi/vB5OHsJ3EME/mqdefault.jpg" alt="" onerror="this.style.display='none'">
+          <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Tricep Rope Pushdowns</div>
+          <div class="ex-meta">Triceps · Définition</div>
+        </div>
+        <div class="ex-sets orange">4×10-12</div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<!-- JOUR B -->
+<div class="page" id="dayB">
+  <div class="section">
+    <div class="section-title"><span></span>Base athlétique</div>
+
+    <a class="ex-card" href="https://www.youtube.com/results?search_query=bulgarian+split+squat" target="_blank">
+      <div class="ex-header">
+        <div class="ex-thumb">
+          <img src="https://i.ytimg.com/vi/2C-uNgKwPLE/mqdefault.jpg" alt="" onerror="this.style.display='none'">
+          <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Bulgarian Split Squats</div>
+          <div class="ex-meta">Jambes · Unilatéral</div>
+        </div>
+        <div class="ex-sets">3×8-10/jambe</div>
+      </div>
+    </a>
+
+    <a class="ex-card" href="https://www.youtube.com/results?search_query=dead+bug+exercise+core" target="_blank">
+      <div class="ex-header">
+        <div class="ex-thumb">
+          <img src="https://i.ytimg.com/vi/4XLEnwUr1d8/mqdefault.jpg" alt="" onerror="this.style.display='none'">
+          <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">The Deadbug</div>
+          <div class="ex-meta">Core · Gainage</div>
+        </div>
+        <div class="ex-sets">3×8/côté</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span></span>Épaules &amp; V-Taper</div>
+
+    <a class="ex-card" href="https://www.youtube.com/results?search_query=seated+dumbbell+overhead+press" target="_blank">
+      <div class="ex-header">
+        <div class="ex-thumb">
+          <img src="https://i.ytimg.com/vi/HzIiNhHhhtA/mqdefault.jpg" alt="" onerror="this.style.display='none'">
+          <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Seated DB Overhead Press</div>
+          <div class="ex-meta">Épaules · Masse</div>
+        </div>
+        <div class="ex-sets">3×8-10</div>
+      </div>
+    </a>
+
+    <a class="ex-card" href="https://www.youtube.com/results?search_query=wide+grip+lat+pulldown" target="_blank">
+      <div class="ex-header">
+        <div class="ex-thumb">
+          <img src="https://i.ytimg.com/vi/JJ8BeiKICmM/mqdefault.jpg" alt="" onerror="this.style.display='none'">
+          <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Wide-Grip Lat Pulldown</div>
+          <div class="ex-meta">Lats · V-shape</div>
+        </div>
+        <div class="ex-sets">3×8-10</div>
+      </div>
+    </a>
+
+    <a class="ex-card" href="https://www.youtube.com/results?search_query=seated+cable+row" target="_blank">
+      <div class="ex-header">
+        <div class="ex-thumb">
+          <img src="https://i.ytimg.com/vi/GZbfZ033f74/mqdefault.jpg" alt="" onerror="this.style.display='none'">
+          <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Seated Cable Rows</div>
+          <div class="ex-meta">Dos milieu · Densité</div>
+        </div>
+        <div class="ex-sets">3×10-12</div>
+      </div>
+    </a>
+
+    <a class="ex-card" href="https://www.youtube.com/results?search_query=dumbbell+lateral+raise" target="_blank">
+      <div class="ex-header">
+        <div class="ex-thumb">
+          <img src="https://i.ytimg.com/vi/3VcKaXpzqRo/mqdefault.jpg" alt="" onerror="this.style.display='none'">
+          <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Dumbbell Lateral Raises</div>
+          <div class="ex-meta">Épaules · Largeur</div>
+        </div>
+        <div class="ex-sets orange">4×12-15</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span></span>Pump bras</div>
+
+    <a class="ex-card" href="https://www.youtube.com/results?search_query=dumbbell+hammer+curl" target="_blank">
+      <div class="ex-header">
+        <div class="ex-thumb">
+          <img src="https://i.ytimg.com/vi/zC3nLlEvin4/mqdefault.jpg" alt="" onerror="this.style.display='none'">
+          <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Dumbbell Hammer Curls</div>
+          <div class="ex-meta">Brachialis · Épaisseur</div>
+        </div>
+        <div class="ex-sets">3×10-12</div>
+      </div>
+    </a>
+
+    <a class="ex-card" href="https://www.youtube.com/results?search_query=overhead+tricep+extension+dumbbell+cable" target="_blank">
+      <div class="ex-header">
+        <div class="ex-thumb">
+          <img src="https://i.ytimg.com/vi/YbX7Wd8jQ-M/mqdefault.jpg" alt="" onerror="this.style.display='none'">
+          <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Overhead Tricep Extension</div>
+          <div class="ex-meta">Triceps long · Volume</div>
+        </div>
+        <div class="ex-sets">3×10-12</div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<!-- MOBILITÉ -->
+<div class="page" id="mobility">
+  <div class="section">
+    <div class="section-title"><span></span>Échauffement — 10 min</div>
+
+    <a class="mobility-card" href="https://www.youtube.com/results?search_query=world+greatest+stretch" target="_blank">
+      <div class="mobility-icon">🌍</div>
+      <div>
+        <div class="mobility-title">World's Greatest Stretch</div>
+        <div class="mobility-meta">5 reps par côté · Mouvement continu</div>
+      </div>
+    </a>
+
+    <a class="mobility-card" href="https://www.youtube.com/results?search_query=90+90+hip+switch" target="_blank">
+      <div class="mobility-icon">🦋</div>
+      <div>
+        <div class="mobility-title">90/90 Hip Switch</div>
+        <div class="mobility-meta">10 reps total · Activation hanches</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span></span>Cool-down — 5 min</div>
+
+    <a class="mobility-card" href="https://www.youtube.com/results?search_query=couch+stretch+hip+flexor" target="_blank">
+      <div class="mobility-icon">🛋️</div>
+      <div>
+        <div class="mobility-title">The Couch Stretch</div>
+        <div class="mobility-meta">60 sec par jambe · Fléchisseur hanche</div>
+      </div>
+    </a>
+
+    <a class="mobility-card" href="https://www.youtube.com/results?search_query=active+hamstring+leg+lowers" target="_blank">
+      <div class="mobility-icon">🦵</div>
+      <div>
+        <div class="mobility-title">Active Hamstring Leg Lowers</div>
+        <div class="mobility-meta">60 sec par jambe · Ischio-jambiers</div>
+      </div>
+    </a>
+  </div>
+
+  <div style="height: 12px;"></div>
+  <div style="margin: 0 16px; padding: 16px; background: var(--card); border-radius: 14px; border: 1px solid var(--border);">
+    <p style="font-size: 13px; color: var(--muted); text-align: center;">💡 Même routine chaque séance — rends-la automatique.</p>
+  </div>
+</div>
+
+<script>
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
